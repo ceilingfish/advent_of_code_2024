@@ -37,8 +37,8 @@ for y in 0..(grid.Length - 1) do
         count <- count + matchWord coord (fun coord -> { coord with x = coord.x + 1 }) 0 // E
         count <- count + matchWord coord (fun coord -> { y = coord.y + 1; x = coord.x + 1 }) 0 // SE
         count <- count + matchWord coord (fun coord -> { coord with y = coord.y + 1 }) 0 // S
-        count <- count + matchWord coord (fun coord -> { x = coord.y - 1; y = coord.y + 1 }) 0 // SW
+        count <- count + matchWord coord (fun coord -> { x = coord.x - 1; y = coord.y + 1 }) 0 // SW
         count <- count + matchWord coord (fun coord -> { coord with x = coord.x - 1 }) 0 // W
-        count <- count + matchWord coord (fun coord -> { x = coord.y - 1; y = coord.y - 1 }) 0 // NW
+        count <- count + matchWord coord (fun coord -> { x = coord.x - 1; y = coord.y - 1 }) 0 // NW
 
 count.Dump();
