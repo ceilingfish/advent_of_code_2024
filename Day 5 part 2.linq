@@ -19,6 +19,7 @@ let orders = lines
                     Pre = (m.Groups["Pre"].Value |> int)
                     Post = (m.Groups["Post"].Value |> int)
                 })
+                |> Seq.toArray
 
 let answer = lines
                 |> Seq.map(fun line -> line.Split(','))
@@ -28,22 +29,25 @@ let answer = lines
                                 |> Seq.map(fun page -> (page |> int))
                                 |> Seq.toArray
                 })
-                |> Seq.where(fun p -> query {
-                                for index, page in Seq.indexed p.Pages do
-                                let previous = p.Pages[0..(index-1)]
-                                let subsequent = p.Pages[(index+1)..]
-                                let r = {|
-                                    Page = page
-                                    Previous = previous
-                                    Subsequent = subsequent
-                                |}
-                                let preConflicts = orders.Any(fun p -> p.Pre = page && previous.Contains(p.Post))
-                                let postConflicts = orders.Any(fun p -> p.Post = page && subsequent.Contains(p.Pre))
-                                all(preConflicts || postConflicts)
-                }).Dump()
-                //|> Seq.map( fun p -> 
-                //    let isEven = p.Pages.Length % 2
-                //    p.Pages[((p.Pages.Length - isEven) / 2)])
-                //|> Seq.sum
+                |> Seq.map(fun p -> 
+                    let reOrderedPages = p.Pages |> Seq.toArray
+                    let mutable hasReordered = false
+                    for currentIndex in 0..(p.Pages.Length-2) do
+                        for afterIndex in (currentIndex+1)..(p.Pages.Length-1) do
+                            let currentPage = reOrderedPages[currentIndex]
+                            let afterPage = reOrderedPages[afterIndex]
+                            let currentBeforeAfter = orders.Any(fun o -> o.Pre = afterPage && o.Post = currentPage)
+                            hasReordered <- hasReordered or currentBeforeAfter
+                            if currentBeforeAfter then
+                                reOrderedPages[currentIndex] <- afterPage
+                                reOrderedPages[afterIndex] <- currentPage
+                    
+                    (hasReordered, reOrderedPages)
+                )
+                |> Seq.where(fun (hasReordered, _) -> hasReordered)
+                |> Seq.map( fun (_, p) -> 
+                    let isEven = p.Length % 2
+                    p[((p.Length - isEven) / 2)])
+                |> Seq.sum
                 
 answer.Dump()
