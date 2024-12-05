@@ -32,11 +32,6 @@ let answer = lines
                                 for index, page in Seq.indexed p.Pages do
                                 let previous = p.Pages[0..(index-1)]
                                 let subsequent = p.Pages[(index+1)..]
-                                let r = {|
-                                    Page = page
-                                    Previous = previous
-                                    Subsequent = subsequent
-                                |}
                                 let preConflicts = orders.Any(fun p -> p.Pre = page && previous.Contains(p.Post))
                                 let postConflicts = orders.Any(fun p -> p.Post = page && subsequent.Contains(p.Pre))
                                 all(not preConflicts && not postConflicts)
