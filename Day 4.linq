@@ -1,6 +1,6 @@
 <Query Kind="FSharpProgram" />
 
-let grid = File.ReadAllLines(@"c:\Users\ceili\Documents\day4_input.txt")
+let grid = File.ReadAllLines(@"C:\Users\tom\Documents\Advent Of Code 2025\day4_input.txt")
             |> Seq.map (fun line -> line.ToCharArray())
             |> Seq.toArray
             
@@ -31,14 +31,14 @@ let mutable count = 0
 for y in 0..(grid.Length - 1) do
     for x in 0..(grid[y].Length - 1) do
         
-        let coord = {x = x; y = y}
-        count <- count + matchWord coord (fun coord -> { coord with y = coord.y - 1 }) 0 // N
-        count <- count + matchWord coord (fun coord -> { y = coord.y - 1; x = coord.x + 1 }) 0 // NE        
-        count <- count + matchWord coord (fun coord -> { coord with x = coord.x + 1 }) 0 // E
-        count <- count + matchWord coord (fun coord -> { y = coord.y + 1; x = coord.x + 1 }) 0 // SE
-        count <- count + matchWord coord (fun coord -> { coord with y = coord.y + 1 }) 0 // S
-        count <- count + matchWord coord (fun coord -> { x = coord.x - 1; y = coord.y + 1 }) 0 // SW
-        count <- count + matchWord coord (fun coord -> { coord with x = coord.x - 1 }) 0 // W
-        count <- count + matchWord coord (fun coord -> { x = coord.x - 1; y = coord.y - 1 }) 0 // NW
+        let matchCoord = matchWord {x = x; y = y}
+        count <- count + matchCoord (fun coord -> { coord with y = coord.y - 1 }) 0 // N
+        + matchCoord (fun coord -> { y = coord.y - 1; x = coord.x + 1 }) 0 // NE        
+        + matchCoord (fun coord -> { coord with x = coord.x + 1 }) 0 // E
+        + matchCoord (fun coord -> { y = coord.y + 1; x = coord.x + 1 }) 0 // SE
+        + matchCoord (fun coord -> { coord with y = coord.y + 1 }) 0 // S
+        + matchCoord (fun coord -> { x = coord.x - 1; y = coord.y + 1 }) 0 // SW
+        + matchCoord (fun coord -> { coord with x = coord.x - 1 }) 0 // W
+        + matchCoord (fun coord -> { x = coord.x - 1; y = coord.y - 1 }) 0 // NW
 
 count.Dump();
