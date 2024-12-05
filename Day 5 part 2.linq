@@ -36,7 +36,7 @@ let answer = lines
                         for afterIndex in (currentIndex+1)..(p.Pages.Length-1) do
                             let currentPage = reOrderedPages[currentIndex]
                             let afterPage = reOrderedPages[afterIndex]
-                            let currentBeforeAfter = orders.Any(fun o -> o.Pre = afterPage && o.Post = currentPage)
+                            let currentBeforeAfter = orders |> Seq.exists(fun o -> o.Pre = afterPage && o.Post = currentPage)
                             hasReordered <- hasReordered or currentBeforeAfter
                             if currentBeforeAfter then
                                 reOrderedPages[currentIndex] <- afterPage
