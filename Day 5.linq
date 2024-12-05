@@ -19,9 +19,6 @@ let orders = lines
                     Pre = (m.Groups["Pre"].Value |> int)
                     Post = (m.Groups["Post"].Value |> int)
                 })
-                |> Seq.groupBy(fun i -> i.Pre)
-                |> Seq.map(fun (i, posts) -> (i, (posts |> Seq.map(fun t -> t.Post))))
-                |> Map.ofSeq
 
 let answer = lines
                 |> Seq.map(fun line -> line.Split(','))
@@ -33,11 +30,20 @@ let answer = lines
                 })
                 |> Seq.where(fun p -> query {
                                 for index, page in Seq.indexed p.Pages do
-                                let requirements = orders[page]
-                                let previous = p.Pages[0..index]
-                                all(requirements.Intersect(previous).Count() = 0)
+                                let previous = p.Pages[0..(index-1)]
+                                let subsequent = p.Pages[(index+1)..]
+                                let r = {|
+                                    Page = page
+                                    Previous = previous
+                                    Subsequent = subsequent
+                                |}
+                                let preConflicts = orders.Any(fun p -> p.Pre = page && previous.Contains(p.Post))
+                                let postConflicts = orders.Any(fun p -> p.Post = page && subsequent.Contains(p.Pre))
+                                all(not preConflicts && not postConflicts)
                 })
-                |> Seq.map( fun p -> p.Pages[((p.Pages.Length - 1) / 2) + 1])
+                |> Seq.map( fun p -> 
+                    let isEven = p.Pages.Length % 2
+                    p.Pages[((p.Pages.Length - isEven) / 2)])
                 |> Seq.sum
                 
 answer.Dump()
